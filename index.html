@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Github Repositories Viewer</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 class="mt-4 mb-4">Github Repositories Viewer</h1>
+
+    <label for="username">Enter Github Username:</label>
+    <input type="text" id="username" class="form-control mb-3" placeholder="Enter Github Username">
+
+    <label for="perPage">Repositories Per Page:</label>
+    <select id="perPage" class="form-control mb-3">
+        <option value="10">10</option>
+        <option value="30">30</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+    </select>
+
+    <button class="btn btn-primary mb-3" onclick="fetchRepositories()">Fetch Repositories</button>
+
+    <div id="repositories" class="mb-4"></div>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination" id="pagination"></ul>
+    </nav>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+    const baseURL = "https://api.github.com/users/";
+
+    function fetchRepositories() {
+        const username = document.getElementById("username").value;
+        const perPage = document.getElementById("perPage").value;
+
+        if (!username) {
+            alert("Please enter a Github username");
+            return;
+        }
+
+        const url = `${baseURL}${username}/repos?per_page=${perPage}`;
+
+        // Show loader while fetching data
+        document.getElementById("repositories").innerHTML = "Loading...";
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => displayRepositories(data))
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                document.getElementById("repositories").innerHTML = "Error fetching repositories.";
+            });
+    }
+
+    function displayRepositories(repositories) {
+        const repositoriesContainer = document.getElementById("repositories");
+        const paginationContainer = document.getElementById("pagination");
+
+        repositoriesContainer.innerHTML = ""; // Clear previous results
+        paginationContainer.innerHTML = ""; // Clear previous pagination
+
+        if (repositories.length === 0) {
+            repositoriesContainer.innerHTML = "No repositories found.";
+            return;
+        }
+
+        repositories.forEach(repo => {
+            const repoDiv = document.createElement("div");
+            repoDiv.innerHTML = `<strong>${repo.name}</strong><br>
+                                <span>${repo.description}</span><br>
+                                <span>Topics: ${repo.topics.join(', ')}</span><br><br>`;
+            repositoriesContainer.appendChild(repoDiv);
+        });
+
+        // Create pagination
+        const pages = Math.ceil(repositories.length / document.getElementById("perPage").value);
+
+        for (let i = 1; i <= pages; i++) {
+            const li = document.createElement("li");
+            li.className = "page-item";
+            li.innerHTML = `<a class="page-link" href="#" onclick="showPage(${i})">${i}</a>`;
+            paginationContainer.appendChild(li);
+        }
+    }
+
+    function showPage(page) {
+        const perPage = document.getElementById("perPage").value;
+        const start = (page - 1) * perPage;
+        const end = start + parseInt(perPage);
+
+        const repositories = JSON.parse(sessionStorage.getItem("repositories"));
+        const currentPageRepositories = repositories.slice(start, end);
+
+        displayRepositories(currentPageRepositories);
+    }
+</script>
+</body>
+</html>
