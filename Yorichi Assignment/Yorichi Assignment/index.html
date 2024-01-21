@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body style="display: flex; flex-direction: column;">
+    <div class="warning_no_username">
+        <form id="username_form" onsubmit="selectUsername(event)">
+            <label for="username_field">Enter Username:</label>
+            <input type="text" id="username_field" name="username_field">
+
+            <label for="repos_per_page">Enter Repos per page:</label>
+            <input type="text" id="repos_per_page" name="repos_per_page">
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    <div class="header">
+        <div class="avatar_container">
+            <img id="avatar" src="" />
+        </div>
+        <div class="user_info_container">
+            <h2 id="username"> </h2>
+            <div id="user_bio"></div>
+            <div id="user_location"></div>
+            <div id="user_twitter"></div>
+        </div>
+    </div>
+    <div id="user_github_url"></div>
+    <div class="repositories_container"></div>
+    <div class="pagination_container">
+        <div class="paginator_controller">
+        </div>
+        <div class="pagination_next_prev_buttons">
+            <button onclick="previousPage()">Previous</button>
+            <button onclick="nextPage()">Next</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
